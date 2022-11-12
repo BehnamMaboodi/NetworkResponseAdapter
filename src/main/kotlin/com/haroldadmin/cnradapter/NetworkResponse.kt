@@ -145,6 +145,33 @@ public sealed interface NetworkResponse<S, E> {
          */
         public val headers: Headers? = response?.headers()
     }
+
+
+    /**
+     * Initialization state
+     *
+     * A failed network request can either be due to a non-2xx response code and contain an error
+     * body ([ServerError]), or due to a connectivity error ([NetworkError]), or due to an unknown
+     * error ([UnknownError]).
+     */
+    public sealed interface Initialize<S, E> : NetworkResponse<S, E> {
+    }
+
+    /**
+     * For handling Loading state
+     * @param oldResponse The previous [NetworkResponse] result. Can be null
+     */
+    public data class Loading<S, E>(
+        public val oldResponse: NetworkResponse<S, E>? = null,
+    ) : Initialize<S, E> {
+    }
+
+    /**
+     * When a response is not initialized yet.
+     */
+    public class Uninitialized<S, E> : Initialize<S, E> {
+    }
+
 }
 
 /**
