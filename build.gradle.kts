@@ -43,9 +43,9 @@ publishing {
 }
 
 dependencies {
-    val coroutinesVersion = "1.5.2"
+    val coroutinesVersion = "1.6.4"
     val retrofitVersion = "2.9.0"
-    val okHttpVersion = "4.9.3"
+    val okHttpVersion = "4.10.0"
     val kotestVersion = "5.0.1"
 
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
