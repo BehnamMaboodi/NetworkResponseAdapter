@@ -10,7 +10,7 @@ plugins {
 val GroupID = "com.github.haroldadmin"
 val ArtifactID = "NetworkResponseAdapter"
 val ProjectName = "NetworkResponseAdapter"
-val ProjectVersion = "5.0.0"
+val ProjectVersion = "5.2.0"
 
 repositories {
     mavenCentral()
