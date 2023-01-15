@@ -25,6 +25,8 @@ import java.io.IOException
  * - Any other problems (e.g. Serialization errors), the [NetworkResponse] is [NetworkResponse.UnknownError].
  */
 public sealed interface NetworkResponse<S, E> {
+    public var cache: S?
+
     /**
      * The result of a successful network request.
      *
@@ -36,8 +38,8 @@ public sealed interface NetworkResponse<S, E> {
      * @param response The original [Response] from Retrofit
      */
     public data class Success<S, E>(
-        public val body: S,
-        public val response: Response<*>? = null
+            public val body: S,
+            public val response: Response<*>? = null, override var cache: S? = null
     ) : NetworkResponse<S, E> {
         /**
          * The status code returned by the server.
@@ -82,8 +84,8 @@ public sealed interface NetworkResponse<S, E> {
      * supplied by the server.
      */
     public data class ServerError<S, E>(
-        public override val body: E? = null,
-        public val response: Response<*>? = null,
+            public override val body: E? = null,
+            public val response: Response<*>? = null, override var cache: S? = null,
     ) : Error<S, E> {
         /**
          * The status code returned by the server.
@@ -109,7 +111,7 @@ public sealed interface NetworkResponse<S, E> {
      * The result of a network connectivity error
      */
     public data class NetworkError<S, E>(
-        public override val error: IOException? = null,
+            public override val error: IOException? = null, override var cache: S? = null,
     ) : Error<S, E> {
 
         /**
@@ -123,8 +125,8 @@ public sealed interface NetworkResponse<S, E> {
      * (e.g. Serialization errors)
      */
     public data class UnknownError<S, E>(
-        public override val error: Throwable? = null,
-        public val response: Response<*>? = null
+            public override val error: Throwable? = null,
+            public val response: Response<*>? = null, override var cache: S? = null
     ) : Error<S, E> {
         /**
          * Always `null` for an [UnknownError]
@@ -150,9 +152,6 @@ public sealed interface NetworkResponse<S, E> {
     /**
      * Initialization state
      *
-     * A failed network request can either be due to a non-2xx response code and contain an error
-     * body ([ServerError]), or due to a connectivity error ([NetworkError]), or due to an unknown
-     * error ([UnknownError]).
      */
     public sealed interface Initialize<S, E> : NetworkResponse<S, E> {
     }
@@ -161,15 +160,13 @@ public sealed interface NetworkResponse<S, E> {
      * For handling Loading state
      * @param oldResponse The previous [NetworkResponse] result. Can be null
      */
-    public data class Loading<S, E>(
-        public val oldResponse: NetworkResponse<S, E>? = null,
-    ) : Initialize<S, E> {
+    public data class Loading<S, E>(override var cache: S? = null) : Initialize<S, E> {
     }
 
     /**
      * When a response is not initialized yet.
      */
-    public class Uninitialized<S, E> : Initialize<S, E> {
+    public class Uninitialized<S, E>(override var cache: S? = null) : Initialize<S, E> {
     }
 
 }
