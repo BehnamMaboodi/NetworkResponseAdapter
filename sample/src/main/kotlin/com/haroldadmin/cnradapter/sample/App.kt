@@ -26,11 +26,11 @@ val okHttp = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
 
 @OptIn(ExperimentalSerializationApi::class)
 val retrofit: Retrofit = Retrofit.Builder()
-    .baseUrl(url)
-    .addCallAdapterFactory(NetworkResponseAdapterFactory())
-    .addConverterFactory(Json.asConverterFactory(contentType))
-    .client(okHttp)
-    .build()
+        .baseUrl(url)
+        .addCallAdapterFactory(NetworkResponseAdapterFactory())
+        .addConverterFactory(Json.asConverterFactory(contentType))
+        .client(okHttp)
+        .build()
 
 val service: PostsService = retrofit.create(PostsService::class.java)
 
@@ -42,6 +42,7 @@ fun main() = runBlocking {
             is NetworkResponse.Success -> {
                 println(Json.encodeToString(postResponse.body))
             }
+            else -> {}
         }
     }
 
@@ -49,8 +50,11 @@ fun main() = runBlocking {
         is NetworkResponse.Error -> {
             println("Failed to get posts: $postsResponse")
         }
-        is NetworkResponse.Success ->  {
+        is NetworkResponse.Success -> {
             println("Fetched ${postsResponse.body.size} posts")
+        }
+        is NetworkResponse.Initialize -> {
+            println("Network call is not initialized")
         }
     }
 
@@ -59,7 +63,7 @@ fun main() = runBlocking {
         val createPostParams = CreatePostParams("CNR Post $i", "Test Post", i)
         when (val createResponse = service.createPost(createPostParams)) {
             is NetworkResponse.NetworkError -> {
-                println("Network connectivity error: ${createResponse.error.message}")
+                println("Network connectivity error: ${createResponse.error?.message}")
             }
             is NetworkResponse.ServerError -> {
                 println("Server error: ${createResponse.code}")
@@ -71,6 +75,10 @@ fun main() = runBlocking {
                 println("Post created successfully")
                 println(Json.encodeToString(createResponse.body))
             }
+            is NetworkResponse.Loading -> {
+                println("Loading")
+            }
+            else -> {}
         }
     }
 }
