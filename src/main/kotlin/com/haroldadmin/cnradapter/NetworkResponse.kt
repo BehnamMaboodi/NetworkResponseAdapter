@@ -37,23 +37,23 @@ public sealed interface NetworkResponse<S, E> {
      */
     public data class Success<S, E>(
         public val body: S,
-        public val response: Response<*>
+        public val response: Response<*>? = null
     ) : NetworkResponse<S, E> {
         /**
          * The status code returned by the server.
          *
          * Alias for [Response.code] of the original response
          */
-        public val code: Int
-            get() = response.code()
+        public val code: Int?
+            get() = response?.code()
 
         /**
          * The headers returned by the server.
          *
          * Alias for [Response.headers] of the original response
          */
-        public val headers: Headers
-            get() = response.headers()
+        public val headers: Headers?
+            get() = response?.headers()
     }
 
     /**
@@ -82,8 +82,8 @@ public sealed interface NetworkResponse<S, E> {
      * supplied by the server.
      */
     public data class ServerError<S, E>(
-        public override val body: E?,
-        public val response: Response<*>?,
+        public override val body: E? = null,
+        public val response: Response<*>? = null,
     ) : Error<S, E> {
         /**
          * The status code returned by the server.
@@ -109,7 +109,7 @@ public sealed interface NetworkResponse<S, E> {
      * The result of a network connectivity error
      */
     public data class NetworkError<S, E>(
-        public override val error: IOException,
+        public override val error: IOException? = null,
     ) : Error<S, E> {
 
         /**
@@ -123,8 +123,8 @@ public sealed interface NetworkResponse<S, E> {
      * (e.g. Serialization errors)
      */
     public data class UnknownError<S, E>(
-        public override val error: Throwable,
-        public val response: Response<*>?
+        public override val error: Throwable? = null,
+        public val response: Response<*>? = null
     ) : Error<S, E> {
         /**
          * Always `null` for an [UnknownError]
